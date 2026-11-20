@@ -998,7 +998,7 @@ static WinConData s_wcd;
 
 
 
-static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	//char *cmdString; // TODO: Reimplement Quit
 	static qboolean s_timePolarity;
@@ -1057,7 +1057,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			SetBkColor( ( HDC ) wParam, RGB( 0x09, 0x29, 0x35 ) );
 			SetTextColor( ( HDC ) wParam, RGB( 0xC3, 0xDA, 0xF3 ) );
 
-			return ( long ) s_wcd.hbrEditBackground;
+			return ( LRESULT ) s_wcd.hbrEditBackground;
 		}
 		else if ( ( HWND ) lParam == s_wcd.hwndErrorBox )
 		{
@@ -1071,7 +1071,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 				SetBkColor( ( HDC ) wParam, RGB( 0x80, 0x80, 0x80 ) );
 				SetTextColor( ( HDC ) wParam, RGB( 0x00, 0x0, 0x00 ) );
 			}
-			return ( long ) s_wcd.hbrErrorBackground;
+			return ( LRESULT ) s_wcd.hbrErrorBackground;
 		}
 		break;
 
@@ -1127,7 +1127,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 
-LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	char inputBuffer[1024];
 
@@ -1288,7 +1288,7 @@ void Sys_CreateConsole( void )
 												g_wv.hInstance, NULL );
 	SendMessage( s_wcd.hwndBuffer, WM_SETFONT, ( WPARAM ) s_wcd.hfBufferFont, 0 );
 
-	s_wcd.SysInputLineWndProc = ( WNDPROC ) SetWindowLong( s_wcd.hwndInputLine, GWL_WNDPROC, ( long ) InputLineWndProc );
+	s_wcd.SysInputLineWndProc = ( WNDPROC ) SetWindowLongPtr( s_wcd.hwndInputLine, GWLP_WNDPROC, ( LONG_PTR ) InputLineWndProc );
 	SendMessage( s_wcd.hwndInputLine, WM_SETFONT, ( WPARAM ) s_wcd.hfBufferFont, 0 );
 
 	ShowWindow( s_wcd.hWnd, SW_SHOWDEFAULT);

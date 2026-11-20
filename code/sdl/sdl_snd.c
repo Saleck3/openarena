@@ -212,12 +212,22 @@ qboolean SNDDMA_Init(void)
 	desired.channels = (int) s_sdlChannels->value;
 	desired.callback = SNDDMA_AudioCallback;
 
+#if SDL_MAJOR_VERSION == 2
+	// Passing a NULL obtained spec makes SDL2 guarantee the desired format and
+	// convert internally. Otherwise SDL2 may hand back a format the mixer can't
+	// write (e.g. 32-bit float on WASAPI), which results in silence.
+	if (SDL_OpenAudio(&desired, NULL) == -1)
+#else
 	if (SDL_OpenAudio(&desired, &obtained) == -1)
+#endif
 	{
 		Com_Printf("SDL_OpenAudio() failed: %s\n", SDL_GetError());
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		return qfalse;
 	}
+#if SDL_MAJOR_VERSION == 2
+	obtained = desired;
+#endif
 
 	SNDDMA_PrintAudiospec("SDL_AudioSpec", &obtained);
 
